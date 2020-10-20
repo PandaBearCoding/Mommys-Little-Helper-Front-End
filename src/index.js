@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         choreLi.innerHTML = `
         <h2>${chore.description}</h2> 
-        <p> Family Member: ${chore.family_member}</p> 
+        <p>Family Member: ${chore.family_member}</p> 
         <p>Due Date: ${chore.due_date}</p> 
         <p>Priority: ${chore.priority}</p> 
         <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
@@ -46,11 +46,23 @@ document.addEventListener("DOMContentLoaded", () => {
           const description = choreForm["description"].value 
 
           const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority }
+          
+          // PATCH when have id (choreForm.dataset.id is defined)
+          // POST when don't have id (choreForm.dataset.id is undefined)
+          let method
+          let submitUrl = baseUrl
+          if(choreForm.dataset.id !== undefined){
+              method = "PATCH"
+              submitUrl += choreForm.dataset.id // adding id to baseUrl to make request to show
+          } else(
+              method = "POST"
+          )
 
         choreForm.reset()
-    
+        choreForm.dataset.id = undefined // clear out dataset from form
+
         const options = {
-            method: "POST",
+            method: method,
             headers: {
               "content-type": "application/json",
               "accept": "application/json"
@@ -58,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             body: JSON.stringify(newChore)
           }
           
-          fetch(baseUrl, options)
+          fetch(submitUrl, options)
           .then(response => response.json())
           .then(chore => {
             renderChore(chore, toDoList) 
@@ -94,13 +106,16 @@ document.addEventListener("DOMContentLoaded", () => {
               const priority = child[3].textContent.split(": ")[1]
               //console.log(description, familyMember, dueDate, priority)
               const form = document.querySelector("#create-chore-form")
-              console.log(form)
+              //console.log(form)
               form.description.value = description
               form.family.value = familyMember
               form.date.value = dueDate
               form.priority.value = priority // *** NOT CHANGING - JUST CLEARING
               const choreId = editButton.parentElement.dataset.choreId
+              form.dataset.id = choreId
               //console.log(choreId)
+              const btn = document.querySelector(".btn")
+              btn.value = "Edit Chore"
             } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
                 if(completedButton.textContent === "Mark as Complete"){
@@ -115,51 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }) 
     }
-
-/*
-
-    const choreForm = document.querySelector("#create-chore-form")
-    choreForm.addEventListener("submit", function(e){
-        e.preventDefault()
-        console.log("submit")
-        const choreForm = e.target
-        const choreId = choreForm.dataset.choreId
-
-        //get values out of form
-        const familyMember = choreForm["family"].value
-        const priority = choreForm["priority"].value        
-        const dueDate = choreForm["date"].value     
-        const description = choreForm["description"].value 
-
-        const editedChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority }
-
-        choreForm.reset()
-        
-        const options = {
-            method: "PATCH"
-            headers: {
-                "content-type": "application/json",
-                "accept": "application/json"
-            },
-            body: JSON.stringify(editedChore)
-        }
-
-        fetch(baseUrl + choreId, options)
-        .then(response => response.json())
-        .then(_chore => {
-            getChores()
-        })
-    })  
-
-    */
-
-
-
-
-
-
-
-
 
     getChores()
     submitHandler()
