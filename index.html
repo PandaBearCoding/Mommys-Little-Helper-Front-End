@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mommy's Little Helper</title>
+    <link rel="stylesheet" href="./css/styles.css"> 
+</head>
+<body>
+    <div id="main-content">
+        <h1>Mommy's Little Helper</h1>
+
+        <h2>Create a Chore!</h2>
+        <form id="create-chore-form" action="#" method="post">
+            <label for="chore-responsibility">Who's Responsible for this Chore?</label>
+            <select id="family" name="family">
+                <option value="Madeline">Madeline</option>
+                <option value="Logan">Logan</option>
+                <option value="Tyler">Tyler</option>
+                <option value="Wendy">Wendy</option>
+                <option value="Robert">Robert</option>
+              </select>
+            <label for="urgent">How Urgent is this Chore?</label>
+            <select id="priority" name="priority">
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <label for="due">Due Date:</label>
+              <input type="date" id="due-date" name="chore-due-date">
+              <label for="new-chore-description">Chore Description:</label>
+              <input type="text" id="new-chore-description" name="new-chore-description" placeholder="description">
+            <input type="submit" value="Create New Chore">
+        </form>
+        
+        <div id="to-do-list">
+            <h2>To-Do:</h2>
+            <ul id="to-do-chores"></ul>
+        </div>
+
+        <div id="completed-list">
+            <h2>Completed:</h2>
+            <ul id="completed-chores"></ul>
+        </div>
+   
+        <script src="./src/index.js"></script>
+    </div>
+</body>
+</html>
