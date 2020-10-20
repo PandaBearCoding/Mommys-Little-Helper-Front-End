@@ -11,24 +11,18 @@
 
         <h2>Create a Chore!</h2>
         <form id="create-chore-form" action="#" method="post">
-            <label for="chore-responsibility">Who's Responsible for this Chore?</label>
-            <select id="family" name="family">
-                <option value="Madeline">Madeline</option>
-                <option value="Logan">Logan</option>
-                <option value="Tyler">Tyler</option>
-                <option value="Wendy">Wendy</option>
-                <option value="Robert">Robert</option>
-              </select>
-            <label for="urgent">How Urgent is this Chore?</label>
+            <label for="family-member">Family Member:</label>
+            <input type="text" id="family" name="family" placeholder="Name">
+            <label for="priority">How Urgent is this Chore?</label>
             <select id="priority" name="priority">
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
               </select>
-              <label for="due">Due Date:</label>
-              <input type="date" id="due-date" name="chore-due-date">
-              <label for="new-chore-description">Chore Description:</label>
-              <input type="text" id="new-chore-description" name="new-chore-description" placeholder="description">
+              <label for="due-date">Due Date:</label>
+              <input type="date" id="date" name="date">
+              <label for="description">Chore:</label>
+              <input type="text" id="description" name="description" placeholder="Description">
             <input type="submit" value="Create New Chore">
         </form>
         

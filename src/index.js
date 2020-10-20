@@ -1,89 +1,168 @@
 document.addEventListener("DOMContentLoaded", () => {
+    
+    baseUrl = "http://localhost:3000/api/v1/chores/"
+    
+    const getChores = () => {
+        fetch(baseUrl)
+        .then (response => response.json())
+        .then(chores => {
+            renderChores(chores)
+      })
+    }
+
+    const renderChores = chores => {
+        toDoList = document.querySelector("#to-do-chores")
+        for(const chore of chores){
+          renderChore(chore, toDoList)
+        }
+      }
+
+    const renderChore = (chore, toDoList) => {
+        const choreLi = document.createElement("li")
+        choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
+
+        choreLi.innerHTML = `
+        <h2>${chore.description}</h2> 
+        <p> Family Member: ${chore.family_member}</p> 
+        <p>Due Date: ${chore.due_date}</p> 
+        <p>Priority: ${chore.priority}</p> 
+        <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
+        <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
+        <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
+        `
+
+        toDoList.append(choreLi)
+    }
 
     const submitHandler = () => {
         const choreForm = document.querySelector("#create-chore-form")
         choreForm.addEventListener("submit", function(e){
           e.preventDefault()
           const choreForm = e.target
+          //get values out of form
           const familyMember = choreForm["family"].value
           const priority = choreForm["priority"].value        
-          const dueDate = choreForm["chore-due-date"].value     
-          const description = choreForm["new-chore-description"].value 
+          const dueDate = choreForm["date"].value     
+          const description = choreForm["description"].value 
 
-          const choreLi = document.createElement('li')
-          //choreLi.dataset.choreId = choreLi.id --> need for PATCH?
+          const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority }
 
-        choreLi.innerHTML = `Family Member: ${familyMember},  Due Date: ${dueDate},  Chore: ${description},  <span class=${priority}> Priority: ${priority} </span>`
-          
-          const deleteButton = document.createElement("button")
-              deleteButton.textContent = "Delete"
-              deleteButton.classList.add("delete")
-              choreLi.append(deleteButton)
-
-            const editButton = document.createElement("button")
-              editButton.textContent = "Edit"
-              editButton.classList.add("edit")
-              choreLi.append(editButton)
-            
-            const completedButton = document.createElement("button")
-              completedButton.textContent = "Mark as Complete"
-              completedButton.classList.add("completed")
-              choreLi.append(completedButton)
-          
-              const choreList = document.querySelector('#to-do-chores')
-              choreList.append(choreLi)
-          
         choreForm.reset()
+    
+        const options = {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            },
+            body: JSON.stringify(newChore)
+          }
+          
+          fetch(baseUrl, options)
+          .then(response => response.json())
+          .then(chore => {
+            renderChore(chore, toDoList) 
+          })
 
         })
     }
 
     const clickHandler = () => {
         document.addEventListener("click", function(e){
-            if(e.target.matches(".delete")){
-                const deleteButton = e.target
-                deleteButton.parentElement.remove()
+          if(e.target.matches(".delete-btn")){
+            const deleteButton = e.target
+            const choreId = deleteButton.parentElement.dataset.choreId
+            
+            const options = {
+              method: "DELETE"
             }
-            else if (e.target.matches(".edit")){
-                const editButton = e.target
-                // access li
-                const li = editButton.parentElement
-                console.log(li)
-                // access info on the li
-
-
-
-                // const words = li.innerHTML.split(/\s+/)
-                // const familyMember = words[2]
-                // const dueDate = words[6]
-                // const description = words[9]
-                // console.log(familyMember, dueDate, description)
-                /*
-                choreLi.innerHTML = `Family Member: ${familyMember},  Due Date: ${dueDate},  Chore: ${description},  <span class=${priority}> Priority: ${priority} </span>`
-                */
-                 
-
-
-            }
-            else if (e.target.matches(".completed")){
+            
+            fetch(baseUrl + choreId, options)
+            .then(response => response.json())
+            .then(_data => {
+              deleteButton.parentElement.remove()
+            })
+          } else if(e.target.matches(".edit-btn")){
+              const editButton = e.target
+              //const choreId = editButton.parentElement.dataset.choreId
+              const li = editButton.parentElement
+              const child = li.children
+              //console.log(child) //--> HTMLCollection
+              const description = child[0].textContent
+              const familyMember = child[1].textContent.split(": ")[1]
+              const dueDate = child[2].textContent.split(": ")[1]
+              const priority = child[3].textContent.split(": ")[1]
+              //console.log(description, familyMember, dueDate, priority)
+              const form = document.querySelector("#create-chore-form")
+              console.log(form)
+              form.description.value = description
+              form.family.value = familyMember
+              form.date.value = dueDate
+              form.priority.value = priority // *** NOT CHANGING - JUST CLEARING
+              const choreId = editButton.parentElement.dataset.choreId
+              //console.log(choreId)
+            } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
-                if (completedButton.textContent === "Mark as Complete"){
+                if(completedButton.textContent === "Mark as Complete"){
                     const completedList = document.querySelector('#completed-chores')
-                    completedList.append(completedButton.parentElement)                   
+                    completedList.append(completedButton.parentElement)
                     completedButton.textContent = "Mark as Incomplete"
                 } else if (completedButton.textContent === "Mark as Incomplete"){
                     const toDoList = document.querySelector('#to-do-chores')
-                    toDoList.append(completedButton.parentElement)            
+                    toDoList.append(completedButton.parentElement)
                     completedButton.textContent = "Mark as Complete"
                 }
-            }            
-        })
+            }
+        }) 
     }
 
+/*
+
+    const choreForm = document.querySelector("#create-chore-form")
+    choreForm.addEventListener("submit", function(e){
+        e.preventDefault()
+        console.log("submit")
+        const choreForm = e.target
+        const choreId = choreForm.dataset.choreId
+
+        //get values out of form
+        const familyMember = choreForm["family"].value
+        const priority = choreForm["priority"].value        
+        const dueDate = choreForm["date"].value     
+        const description = choreForm["description"].value 
+
+        const editedChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority }
+
+        choreForm.reset()
+        
+        const options = {
+            method: "PATCH"
+            headers: {
+                "content-type": "application/json",
+                "accept": "application/json"
+            },
+            body: JSON.stringify(editedChore)
+        }
+
+        fetch(baseUrl + choreId, options)
+        .then(response => response.json())
+        .then(_chore => {
+            getChores()
+        })
+    })  
+
+    */
+
+
+
+
+
+
+
+
+
+    getChores()
     submitHandler()
     clickHandler()
 
 })
-
-
-
