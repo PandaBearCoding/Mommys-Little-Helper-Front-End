@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
           })
 
         })
+
     }
 
     const clickHandler = () => {
