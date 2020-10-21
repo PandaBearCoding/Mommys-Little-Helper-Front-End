@@ -22,16 +22,31 @@ document.addEventListener("DOMContentLoaded", () => {
         choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
 
         choreLi.innerHTML = `
-        <h2>${chore.description}</h2> 
-        <p>Family Member: ${chore.family_member}</p> 
-        <p>Due Date: ${chore.due_date}</p> 
-        <p>Priority: ${chore.priority}</p> 
+        <h2 id="desc">${chore.description}</h2> 
+        <p id="fam">Family Member: ${chore.family_member}</p> 
+        <p id="dd">Due Date: ${chore.due_date}</p> 
+        <p id="pri">Priority: ${chore.priority}</p> 
         <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
         <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
         <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
         `
 
         toDoList.append(choreLi)
+    }
+
+    const renderEdit = (choreId, newChore) => {
+        // get object from PATCH, find corresponding LI
+        const choreLi = document.querySelector(`[data-chore-id="${choreId}"]`)
+        // update properties
+        const description = choreLi.querySelector("#desc")
+        description.textContent = newChore.description
+        const family = choreLi.querySelector("#fam")
+        family.textContent = `Family Member: ${newChore.family_member}`
+        const date = choreLi.querySelector("#dd")
+        date.textContent = `Due Date: ${newChore.due_date}`
+        const priority = choreLi.querySelector("#pri")
+        priority.textContent = `Priority: ${newChore.priority}`  
+        console.log(priority.textContent) 
     }
 
     const submitHandler = () => {
@@ -54,30 +69,49 @@ document.addEventListener("DOMContentLoaded", () => {
           if(choreForm.dataset.id !== undefined){
               method = "PATCH"
               submitUrl += choreForm.dataset.id // adding id to baseUrl to make request to show
-          } else(
+
+              const options = {
+                method: method,
+                headers: {
+                  "content-type": "application/json",
+                  "accept": "application/json"
+                },
+                body: JSON.stringify(newChore)
+              }
+
+              editChore(choreForm.dataset.id, options)
+          } else{
               method = "POST"
-          )
+              
+              const options = {
+                method: method,
+                headers: {
+                  "content-type": "application/json",
+                  "accept": "application/json"
+                },
+                body: JSON.stringify(newChore)
+              }
+
+              createChore(options)
+            }
 
         choreForm.reset()
         choreForm.dataset.id = undefined // clear out dataset from form
 
-        const options = {
-            method: method,
-            headers: {
-              "content-type": "application/json",
-              "accept": "application/json"
-            },
-            body: JSON.stringify(newChore)
-          }
+        function editChore(choreId, options){
+            fetch(submitUrl, options)
+            .then(response => response.json())
+            .then(renderEdit(choreId, newChore))
+        }
           
-          fetch(submitUrl, options)
-          .then(response => response.json())
-          .then(chore => {
-            renderChore(chore, toDoList) 
-          })
-
+        function createChore(options){
+            fetch(submitUrl, options)
+            .then(response => response.json())
+            .then(chore => {
+              renderChore(chore, toDoList) 
+            })
+        }
         })
-
     }
 
     const clickHandler = () => {
@@ -123,10 +157,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     const completedList = document.querySelector('#completed-chores')
                     completedList.append(completedButton.parentElement)
                     completedButton.textContent = "Mark as Incomplete"
+                    // INCREASE POINTS BY 2
+                    // const pointsUl = document.querySelector("#points")
+                    // const pointsLi = scoreUl.querySelector(".achievedpoints")
+                    // const pointsSpan = pointsLi.querySelector("span")
+                    // const currentPoints = parseInt(pointsSpan.textContent)
+                    // const updatedPoints = currentPoints + 2
                 } else if (completedButton.textContent === "Mark as Incomplete"){
                     const toDoList = document.querySelector('#to-do-chores')
                     toDoList.append(completedButton.parentElement)
                     completedButton.textContent = "Mark as Complete"
+                    // DECREASE POINTS BY 2
+                    // const pointsUl = document.querySelector("#points")
+                    // const pointsLi = scoreUl.querySelector(".achievedpoints")
+                    // const pointsSpan = pointsLi.querySelector("span")
+                    // const currentPoints = parseInt(pointsSpan.textContent)
+                    // const updatedPoints = currentPoints - 2
                 }
             }
         }) 
@@ -137,3 +183,82 @@ document.addEventListener("DOMContentLoaded", () => {
     clickHandler()
 
 })
+
+
+
+
+
+
+        /* 
+
+    goalUrl = "http://localhost:3000/api/v1/goals/"
+
+
+    const getGoals = () => {
+        fetch(goalUrl)
+        .then (response => response.json())
+        .then(goals => {
+            renderGoals(goals)
+      })
+    }
+
+    const rendergoalss = goals => {
+        goalList = document.querySelector("#goal-list")
+        for(const goal of goals){
+          renderGoal(goal, goalList)
+        }
+      }
+
+    const renderGoal = (goal, goalList) => {
+        // edit existing HTML
+    }
+  
+
+    const submitHandler = () => {
+        if(e.target.matches("#create-reward-form")){
+        const rewardForm = document.querySelector("#create-reward-form")
+        rewardForm.addEventListener("submit", function(e){
+          e.preventDefault()
+          const rewardForm = e.target
+          //get values out of form
+          const total = choreForm["total"].value
+          const reward = choreForm["reward"].value        
+        
+          const newGoal = { total: total, reward: reward }
+          
+          // PATCH when have id
+          // POST when don't have id 
+          let goalMethod
+          let submitUrl = baseUrl
+          if(choreForm.dataset.id !== undefined){
+              goalMethod = "PATCH"
+              submitUrl += choreForm.dataset.id // adding id to baseUrl to make request to show
+          } else(
+              goalMethod = "POST"
+          )
+
+        rewardForm.reset()
+        rewardForm.dataset.id = undefined // clear out dataset from form
+
+        const options = {
+            method: goalMethod,
+            headers: {
+              "content-type": "application/json",
+              "accept": "application/json"
+            },
+            body: JSON.stringify(newGoal)
+          }
+          
+          fetch(submitUrl, options)
+          .then(response => response.json())
+          .then(chore => {
+            renderGoal(goal, goalList) 
+          })
+
+        })
+    })
+    }
+
+
+
+        */

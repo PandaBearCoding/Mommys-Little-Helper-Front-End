@@ -11,20 +11,30 @@
 
         <h2>Create a Chore!</h2>
         <form id="create-chore-form" action="#" method="post">
-            <label for="family-member">Family Member:</label>
+            <label for="family">Family Member:</label>
             <input type="text" id="family" name="family" placeholder="Name">
             <label for="priority">How Urgent is this Chore?</label>
             <select id="priority" name="priority">
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
               </select>
-              <label for="due-date">Due Date:</label>
+              <label for="date">Due Date:</label>
               <input type="date" id="date" name="date">
               <label for="description">Chore:</label>
               <input type="text" id="description" name="description" placeholder="Description">
             <input type="submit" class="btn" value="Create Chore">
         </form>
+
+        <div>
+            <h2> Create the Weekly Goal:</h2>
+            <form id="create-reward-form" action="#" method="post">
+                <label for="total">Total Points:</label>
+                <input type="text" id="total" name="total" placeholder="Total Points"></li>
+                <label for="reward">Reward:</label>
+                <input type="text" id="reward" name="reward" placeholder="Reward"></li>
+                <input type="submit" class="btn" value="Create Reward">
+        </div>
         
         <div id="to-do-list">
             <h2>To-Do:</h2>
@@ -34,6 +44,15 @@
         <div id="completed-list">
             <h2>Completed:</h2>
             <ul id="completed-chores"></ul>
+        </div>
+
+        <div id="goal-list">
+            <h2>Goal:</h2> 
+            <ul id="points">
+                <li class="goalpoints">Total Points:</li>
+                <li class="achievedpoints">Current Points: <span>0</span></li>
+                <li>Reward:</li>
+            </ul>
         </div>
    
         <script src="./src/index.js"></script>
