@@ -10,7 +10,7 @@
         <h1>Mommy's Little Helper</h1>
 
         <h2>Create a Chore!</h2>
-        <form id="create-chore-form" action="#" method="post">
+        <form id="create-chore-form" data-id="create" action="#" method="post">
             <label for="family">Family Member:</label>
             <input type="text" id="family" name="family" placeholder="Name">
             <label for="priority">How Urgent is this Chore?</label>
@@ -19,7 +19,7 @@
                 <option value="Medium">Medium</option>
                 <option value="Low">Low</option>
               </select>
-              <label for="date">Due Date:</label>
+              <label for="date">Due By:</label>
               <input type="date" id="date" name="date">
               <label for="description">Chore:</label>
               <input type="text" id="description" name="description" placeholder="Description">
@@ -28,12 +28,12 @@
 
         <div>
             <h2> Create the Weekly Goal:</h2>
-            <form id="create-reward-form" action="#" method="post">
-                <label for="total">Total Points:</label>
-                <input type="text" id="total" name="total" placeholder="Total Points"></li>
+            <form id="create-goal-form" data-id="creating" action="#" method="post">
                 <label for="reward">Reward:</label>
                 <input type="text" id="reward" name="reward" placeholder="Reward"></li>
-                <input type="submit" class="btn" value="Create Reward">
+                <label for="date">Due By:</label>
+                <input type="date" id="date" name="date">
+                <input type="submit" class="buttn" value="Create Goal">
         </div>
         
         <div id="to-do-list">
@@ -47,12 +47,8 @@
         </div>
 
         <div id="goal-list">
-            <h2>Goal:</h2> 
-            <ul id="points">
-                <li class="goalpoints">Total Points:</li>
-                <li class="achievedpoints">Current Points: <span>0</span></li>
-                <li>Reward:</li>
-            </ul>
+            <h2>Goals:</h2> 
+            <ul id="goals"></ul>   
         </div>
    
         <script src="./src/index.js"></script>
