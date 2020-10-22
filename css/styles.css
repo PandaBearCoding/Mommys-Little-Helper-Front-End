@@ -1,13 +1,52 @@
+#chore {
+  font-size: 80px;
+}
 
-  .high {
-    color: red;
-  }
-  
-  .medium {
-    color: yellow;
-  }
-  
-  .low {
-    color: green;
-  }
-  
+#cc {
+  font-size: 40px;
+}
+
+#main-content {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 15px 20px 18px 18px;
+  border-radius: 5px;
+  box-shadow: 2px 5px 5px #333;
+}
+
+#to-do-list {
+  margin: 10px;
+  border: 1px solid #333;
+  background: cornflowerblue;
+  padding: 15px 20px 18px 18px;
+  border-radius: 5px;
+  box-shadow: 2px 5px 5px #333;
+}
+
+#completed-list {
+  margin: 10px;
+  border: 1px solid #333;
+  background: cornflowerblue;
+  padding: 15px 20px 18px 18px;
+  border-radius: 5px;
+  box-shadow: 2px 5px 5px #333;
+}
+
+button {
+  background: none;
+  border: 0px;
+  color: seashell;
+  font-size: 15px;
+  width: 60px;
+  margin: 10px 0 0;
+  font-family: Lato, sans-serif;
+  cursor: pointer;
+}
+button:hover {
+  color: yellow;
+}

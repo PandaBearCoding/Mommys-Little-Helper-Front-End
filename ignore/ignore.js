@@ -1,6 +1,8 @@
+/*
 document.addEventListener("DOMContentLoaded", () => {
     
     baseUrl = "http://localhost:3000/api/v1/chores/"
+    goalUrl = "http://localhost:3000/api/v1/goals/"
     
     const getChores = () => {
         fetch(baseUrl)
@@ -26,12 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <p id="fam">Family Member: ${chore.family_member}</p> 
         <p id="dd">Due Date: ${chore.due_date}</p> 
         <p id="pri">Priority: ${chore.priority}</p> 
-        <p hidden id="status">False</p> 
+        <p hidden id="status">Incomplete</p> 
         <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
         <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
-        <button class="completed-btn" data-chore-id="${chore.id}">Complete</button>
+        <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
         ` 
-
+        
         toDoList.append(choreLi)
     }
 
@@ -52,6 +54,47 @@ document.addEventListener("DOMContentLoaded", () => {
         choreForm.reset()
         choreForm.dataset.id = "create"
     }
+
+    
+    const getGoals = () => {
+        fetch(goalUrl)
+        .then (response => response.json())
+        .then(goals => {
+            renderGoals(goals)
+      })
+    }
+
+    const renderGoals = goals => {
+        goalList = document.querySelector("#goal-list")
+        for(const goal of goals){
+          renderGoal(goal, goalList)
+        }
+    }
+
+    const renderGoal = (goal, goalList) => {
+        const goalLi = document.createElement("li")
+        goalLi.dataset.goalId = goal.id
+
+        goalLi.innerHTML = `
+        <h2 id="reward">${goal.reward}</h2> 
+        <p id="due">Due Date: ${goal.date}</p> 
+        <button class="ed-button" data-goal-id="${goal.id}">Edit</button>
+        <button class="del-button" data-goal-id="${goal.id}">Delete</button>
+        `
+        goalList.append(goalLi)
+    }
+
+    const renderEditGoal = (goalId, newGoal, goalForm)  => {
+        const goalLi = document.querySelector(`[data-goal-id="${goalId}"]`)
+        const reward = goalLi.querySelector("#reward")
+        reward.textContent = newGoal.reward
+        const date = goalLi.querySelector("#due")
+        date.textContent = `Due Date: ${newGoal.date}`
+        const btn = document.querySelector(".buttn")
+        btn.value = "Create Goal"
+        goalForm.reset()
+        goalForm.dataset.id = "creating"
+    }
     
     const submitHandler = () => {
         document.addEventListener("submit", function(e){
@@ -71,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
               
               let method
               let submitUrl = baseUrl
+              console.log("outside", choreForm)
 
               if(choreForm.dataset.id === "create"){
                 console.log("POST")
@@ -89,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
              }
              else if(choreForm.dataset.id !== "create"){
+                console.log("inside", choreForm.dataset.id)
                   method = "PATCH"
                   submitUrl += choreForm.dataset.id // adding id to baseUrl to make request to show
                   
@@ -102,7 +147,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     
                     editChore(choreForm.dataset.id, options)
+                    
                 } 
+                
+                // choreForm.reset()
+                // choreForm.dataset.id = undefined // clear out dataset from form
                 
                 function editChore(choreId, options){
                     fetch(submitUrl, options)
@@ -118,6 +167,62 @@ document.addEventListener("DOMContentLoaded", () => {
                     })
                     choreForm.reset()
                 }
+            } else if(e.target.matches("#create-goal-form")){
+                
+                const goalForm = e.target
+                const reward = goalForm["reward"].value        
+                const date = goalForm["date"].value     
+                
+                const newGoal = { reward: reward, date: date }
+
+                let method
+                let submitGoalUrl = goalUrl
+                
+                if(goalForm.dataset.id === "creating"){
+                    
+                    method = "POST"
+                    
+                    const options = {
+                        method: method,
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify(newGoal)
+                    }
+                
+                createGoal(options)
+                }
+                else if(goalForm.dataset.id !== "creating"){
+                    method = "PATCH"
+                    submitGoalUrl += goalForm.dataset.id
+                    
+                    const options = {
+                        method: method,
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify(newGoal)
+                    }
+                    
+                    editGoal(goalForm.dataset.id, options)  
+                } 
+                
+                function createGoal(options){
+                    fetch(submitGoalUrl, options)
+                    .then(response => response.json())
+                    .then(goal => {
+                        renderGoal(goal, goalList) 
+                    })
+                }
+
+                function editGoal(goalId, options){
+                    fetch(submitGoalUrl, options)
+                    .then(response => response.json())
+                    .then(renderEditGoal(goalId, newGoal, goalForm))
+                }
+              
             }
         })
     }
@@ -162,13 +267,13 @@ document.addEventListener("DOMContentLoaded", () => {
               //console.log("it's been clicked")
             } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
-                if(completedButton.textContent === "Complete"){
+                if(completedButton.textContent === "Mark as Complete"){
                     const completedList = document.querySelector('#completed-chores')
                     completedList.append(completedButton.parentElement)
                     const status = completedButton.parentElement.querySelector("#status")
                     status.textContent = "Complete"
                     //completedButton.parentElement.status = "Complete"
-                    completedButton.textContent = "Incomplete"
+                    completedButton.textContent = "Mark as Incomplete"
 
                     // let submitUrl = baseUrl += completedButton.parentElement.dataset.id
 
@@ -190,13 +295,46 @@ document.addEventListener("DOMContentLoaded", () => {
                     //     .then(response => response.json())
                     // }
 
-                } else if(completedButton.textContent === "Incomplete"){
+                      
+
+            
+
+
+
+
+                } else if(completedButton.textContent === "Mark as Incomplete"){
                     const choreId = completedButton.parentElement.dataset.choreId
                     const toDoList = document.querySelector('#to-do-chores')
                     toDoList.append(completedButton.parentElement)
-                    completedButton.textContent = "Complete"
+                    completedButton.textContent = "Mark as Complete"
             
                 } 
+            } else if(e.target.matches(".del-button")){
+                const delButton = e.target
+                const goalId = delButton.parentElement.dataset.goalId
+                
+                const options = {
+                  method: "DELETE"
+                }
+                
+                fetch(goalUrl + goalId, options)
+                .then(response => response.json())
+                .then(_data => {
+                  delButton.parentElement.remove()
+                })
+             } else if(e.target.matches(".ed-button")){
+                const editButton = e.target
+                const li = editButton.parentElement
+                const child = li.children
+                const reward = child[0].textContent
+                const date = child[1].textContent.split(": ")[1]
+                const goalForm = document.querySelector("#create-goal-form")
+                goalForm.reward.value = reward
+                goalForm.date.value = date
+                const goalId = editButton.parentElement.dataset.goalId
+                goalForm.dataset.id = goalId
+                const submitBtn = document.querySelector(".buttn")
+                submitBtn.value = "Edit Goal"
             }
         }) 
     }
@@ -204,5 +342,8 @@ document.addEventListener("DOMContentLoaded", () => {
     getChores()
     submitHandler()
     clickHandler()
+    getGoals()
 
 })
+
+*/

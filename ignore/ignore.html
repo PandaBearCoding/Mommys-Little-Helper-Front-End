@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="./css/styles.css"> 
 </head>
 <body>
-    <div class = "container" id="main-content" style="background-color:#66CDAA">
-        <h1 id="chore">Mommy's Little Helper</h1>
-        <img style="width:30em; height:20em;" src="https://nbc16.com/resources/media/6fe9571f-4c3e-4d7e-992b-c9c410a73190-large16x9_kiddoingchores.jpg?1581949475373" alt="">
-        <h2 id="cc">Create a Chore!</h2>
+    <div id="main-content">
+        <h1>Mommy's Little Helper</h1>
+
+        <h2>Create a Chore!</h2>
         <form id="create-chore-form" data-id="create" action="#" method="post">
             <label for="family">Family Member:</label>
             <input type="text" id="family" name="family" placeholder="Name">
@@ -25,6 +25,16 @@
               <input type="text" id="description" name="description" placeholder="Description">
             <input type="submit" class="btn" value="Create Chore">
         </form>
+
+        <div>
+            <h2> Create the Weekly Reward:</h2>
+            <form id="create-goal-form" data-id="creating" action="#" method="post">
+                <label for="reward">Reward:</label>
+                <input type="text" id="reward" name="reward" placeholder="Reward"></li>
+                <label for="date">Due By:</label>
+                <input type="date" id="date" name="date">
+                <input type="submit" class="buttn" value="Create Goal">
+        </div>
         
         <div id="to-do-list">
             <h2>To-Do:</h2>
@@ -34,6 +44,11 @@
         <div id="completed-list">
             <h2>Completed:</h2>
             <ul id="completed-chores"></ul>
+        </div>
+
+        <div id="goal-list">
+            <h2>Goals:</h2> 
+            <ul id="goals"></ul>   
         </div>
    
         <script src="./src/index.js"></script>
