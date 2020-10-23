@@ -21,18 +21,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const choreLi = document.createElement("li")
         choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
 
+        choreLi.dataset.status = chore.status
+
         choreLi.innerHTML = `
         <h2 id="desc">${chore.description}</h2> 
         <p id="fam">Family Member: ${chore.family_member}</p> 
         <p id="dd">Due Date: ${chore.due_date}</p> 
         <p id="pri">Priority: ${chore.priority}</p> 
-        <p hidden id="status">False</p> 
         <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
         <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
-        <button class="completed-btn" data-chore-id="${chore.id}">Complete</button>
+        <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
         ` 
-
-        toDoList.append(choreLi)
+        // once created - incomplete - status is true; if status = true, append to to-do-list
+        if(chore.status = true){
+            toDoList.append(choreLi)
+        }
     }
 
     const renderEditChore = (choreId, newChore, choreForm) => {
@@ -64,7 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
               const dueDate = choreForm["date"].value     
               const description = choreForm["description"].value 
               
-              const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority }
+              const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority, status: false }
               
               // PATCH when have id (choreForm.dataset.id is defined)
               // POST when don't have id (choreForm.dataset.id is undefined)
@@ -162,40 +165,55 @@ document.addEventListener("DOMContentLoaded", () => {
               //console.log("it's been clicked")
             } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
-                if(completedButton.textContent === "Complete"){
+                if(completedButton.textContent === "Mark as Complete"){
                     const completedList = document.querySelector('#completed-chores')
                     completedList.append(completedButton.parentElement)
-                    const status = completedButton.parentElement.querySelector("#status")
-                    status.textContent = "Complete"
-                    //completedButton.parentElement.status = "Complete"
-                    completedButton.textContent = "Incomplete"
-
-                    // let submitUrl = baseUrl += completedButton.parentElement.dataset.id
-
+                    completedButton.textContent = "Mark as Incomplete"
                     
-                    // const options = {
-                    //     method: "PATCH",
-                    //     headers: {
-                    //         "content-type": "application/json",
-                    //         "accept": "application/json"
-                    //     },
-                    //     body: JSON.stringify(completedButton.parentElement)
-                    // }
+                    // find status & change value
+                    const li = completedButton.parentElement
+                    console.log(li)
+                    li.dataset.status = false
+                    // do PATCH to change in DB
 
-                    // editStatus(completedButton.parentElement.dataset.id, options)
+                    let completeUrl = baseUrl + completedButton.parentElement.dataset.choreId
 
+                    const options = {
+                        method: "PATCH",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify({ status: false })
+                    }
+                    
+                    fetch(completeUrl, options)
+                    .then(response => response.json())
 
-                    // function editStatus(options){
-                    //     fetch(submitUrl, options)
-                    //     .then(response => response.json())
-                    // }
-
-                } else if(completedButton.textContent === "Incomplete"){
+                } else if(completedButton.textContent === "Mark as Incomplete"){
                     const choreId = completedButton.parentElement.dataset.choreId
                     const toDoList = document.querySelector('#to-do-chores')
                     toDoList.append(completedButton.parentElement)
-                    completedButton.textContent = "Complete"
-            
+                    completedButton.textContent = "Mark as Complete"
+
+                    // find status & change value
+                    const li = completedButton.parentElement
+                    li.dataset.status = true
+                    // do PATCH to change in DB
+
+                    let completeUrl = baseUrl + completedButton.parentElement.dataset.choreId
+
+                    const options = {
+                        method: "PATCH",
+                        headers: {
+                            "content-type": "application/json",
+                            "accept": "application/json"
+                        },
+                        body: JSON.stringify({ status: true })
+                    }
+                    
+                    fetch(completeUrl, options)
+                    .then(response => response.json())
                 } 
             }
         }) 
