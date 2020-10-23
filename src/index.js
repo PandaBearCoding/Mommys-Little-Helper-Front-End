@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const renderChore = (chore, toDoList) => {
+        let buttonText
+        if(chore.status){
+            buttonText = "Mark as Complete"
+        }else{
+            buttonText = "Mark as Incomplete"
+        }
         const completedList = document.querySelector("#completed-chores")
         const choreLi = document.createElement("li")
         choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
@@ -31,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <p id="pri">Priority: ${chore.priority}</p> 
         <button class="delete-btn" data-chore-id="${chore.id}">Delete</button>
         <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
-        <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
+        <button class="completed-btn" data-chore-id="${chore.id}">${buttonText}</button>
         ` 
         // once created - incomplete - complete status is false; if status = false, append to to-do-list
         if(chore.status){
@@ -168,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
               //console.log("it's been clicked")
             } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
-                if(completedButton.textContent == "Mark as Complete"){
+                if(completedButton.textContent === "Mark as Complete"){
                     const completedList = document.querySelector('#completed-chores')
                     //completedList.append(completedButton.parentElement)
                     
@@ -192,10 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     fetch(completeUrl, options)
                     .then(response => response.json())
 
-    
                     completedList.append(li)
                     completedButton.textContent = "Mark as Incomplete"
-
 
                 } else if(completedButton.textContent == "Mark as Incomplete"){
                     const choreId = completedButton.parentElement.dataset.choreId
