@@ -15,9 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
         for(const chore of chores){
           renderChore(chore, toDoList)
         }
-      }
+    }
 
     const renderChore = (chore, toDoList) => {
+        const completedList = document.querySelector("#completed-chores")
         const choreLi = document.createElement("li")
         choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
 
@@ -33,8 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
         ` 
         // once created - incomplete - status is true; if status = true, append to to-do-list
-        if(chore.status = true){
+        if(chore.status){
             toDoList.append(choreLi)
+        }else{
+            completedList.append(choreLi)
         }
     }
 
@@ -190,6 +193,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     fetch(completeUrl, options)
                     .then(response => response.json())
 
+    
+                    completedList.append(li)
+                
+
                 } else if(completedButton.textContent === "Mark as Incomplete"){
                     const choreId = completedButton.parentElement.dataset.choreId
                     const toDoList = document.querySelector('#to-do-chores')
@@ -214,6 +221,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     fetch(completeUrl, options)
                     .then(response => response.json())
+
+                    toDoList.append(li)
+
                 } 
             }
         }) 
