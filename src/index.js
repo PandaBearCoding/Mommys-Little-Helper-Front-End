@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const choreLi = document.createElement("li")
         choreLi.dataset.choreId = chore.id // good for functionality later - PATCH requests
 
-        choreLi.dataset.status = chore.status
+        choreLi.dataset.incompleteChoreStatus = chore.status
 
         choreLi.innerHTML = `
         <h2 id="desc">${chore.description}</h2> 
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="edit-btn" data-chore-id="${chore.id}">Edit</button>
         <button class="completed-btn" data-chore-id="${chore.id}">Mark as Complete</button>
         ` 
-        // once created - incomplete - status is true; if status = true, append to to-do-list
+        // once created - incomplete - complete status is false; if status = false, append to to-do-list
         if(chore.status){
             toDoList.append(choreLi)
         }else{
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
               const dueDate = choreForm["date"].value     
               const description = choreForm["description"].value 
               
-              const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority, status: false }
+              const newChore = { family_member: familyMember, due_date: dueDate, description: description, priority: priority, status: true }
               
               // PATCH when have id (choreForm.dataset.id is defined)
               // POST when don't have id (choreForm.dataset.id is undefined)
@@ -168,15 +168,14 @@ document.addEventListener("DOMContentLoaded", () => {
               //console.log("it's been clicked")
             } else if (e.target.matches(".completed-btn")){
                 const completedButton = e.target
-                if(completedButton.textContent === "Mark as Complete"){
+                if(completedButton.textContent == "Mark as Complete"){
                     const completedList = document.querySelector('#completed-chores')
-                    completedList.append(completedButton.parentElement)
-                    completedButton.textContent = "Mark as Incomplete"
+                    //completedList.append(completedButton.parentElement)
                     
                     // find status & change value
                     const li = completedButton.parentElement
-                    console.log(li)
-                    li.dataset.status = false
+                    //console.log(li)
+                    li.dataset.incompleteChoreStatus = false
                     // do PATCH to change in DB
 
                     let completeUrl = baseUrl + completedButton.parentElement.dataset.choreId
@@ -195,17 +194,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     
                     completedList.append(li)
-                
+                    completedButton.textContent = "Mark as Incomplete"
 
-                } else if(completedButton.textContent === "Mark as Incomplete"){
+
+                } else if(completedButton.textContent == "Mark as Incomplete"){
                     const choreId = completedButton.parentElement.dataset.choreId
                     const toDoList = document.querySelector('#to-do-chores')
-                    toDoList.append(completedButton.parentElement)
-                    completedButton.textContent = "Mark as Complete"
+                    //toDoList.append(completedButton.parentElement)
 
                     // find status & change value
                     const li = completedButton.parentElement
-                    li.dataset.status = true
+                    li.dataset.incompleteChoreStatus = true
                     // do PATCH to change in DB
 
                     let completeUrl = baseUrl + completedButton.parentElement.dataset.choreId
@@ -223,6 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     .then(response => response.json())
 
                     toDoList.append(li)
+                    completedButton.textContent = "Mark as Complete"
 
                 } 
             }
